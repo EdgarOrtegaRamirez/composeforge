@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.24']
+    
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
+      
+      - name: Vet
+        run: go vet ./...
+      
+      - name: Test
+        run: go test ./tests/... -v
+      
+      - name: Build
+        run: go build -o composeforge ./cmd/composeforge
