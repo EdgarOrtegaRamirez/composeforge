@@ -51,7 +51,7 @@ func newValidateCmd() *cobra.Command {
 func runValidate(files []string) error {
 	totalErrors := 0
 	totalWarnings := 0
-	
+
 	for _, file := range files {
 		cf, err := parser.ParseFile(file)
 		if err != nil {
@@ -59,14 +59,14 @@ func runValidate(files []string) error {
 			totalErrors++
 			continue
 		}
-		
+
 		result := validator.Validate(cf)
-		
+
 		if len(result.Issues) == 0 {
 			fmt.Printf("✓ %s: valid\n", file)
 			continue
 		}
-		
+
 		fmt.Printf("\n%s:\n", file)
 		for _, issue := range result.Issues {
 			prefix := "  "
@@ -86,17 +86,17 @@ func runValidate(files []string) error {
 			}
 			fmt.Printf("%s%s%s: %s\n", prefix, svc, issue.Category, issue.Message)
 		}
-		
+
 		fmt.Printf("\n  Summary: %d errors, %d warnings, %d info\n",
 			result.ErrorCount, result.WarningCount, result.InfoCount)
-		
+
 		totalErrors += result.ErrorCount
 		totalWarnings += result.WarningCount
 	}
-	
+
 	fmt.Printf("\n═══\n")
 	fmt.Printf("Total: %d errors, %d warnings across %d file(s)\n", totalErrors, totalWarnings, len(files))
-	
+
 	if totalErrors > 0 {
 		return fmt.Errorf("validation failed with %d error(s)", totalErrors)
 	}
@@ -105,7 +105,7 @@ func runValidate(files []string) error {
 
 func newAnalyzeCmd() *cobra.Command {
 	var output string
-	
+
 	cmd := &cobra.Command{
 		Use:   "analyze [file]",
 		Short: "Analyze a docker-compose file",
@@ -115,9 +115,9 @@ func newAnalyzeCmd() *cobra.Command {
 			return runAnalyze(args[0], output)
 		},
 	}
-	
+
 	cmd.Flags().StringVarP(&output, "output", "o", "text", "Output format: text, json")
-	
+
 	return cmd
 }
 
@@ -126,9 +126,9 @@ func runAnalyze(file, output string) error {
 	if err != nil {
 		return fmt.Errorf("error parsing file: %w", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
-	
+
 	switch output {
 	case "json":
 		// JSON output
@@ -139,20 +139,20 @@ func runAnalyze(file, output string) error {
 		fmt.Println()
 		fmt.Print(analysis.Summary())
 		fmt.Println()
-		
+
 		fmt.Println("── Build Order ──")
 		for i, svc := range analysis.BuildOrder {
 			fmt.Printf("  %d. %s\n", i+1, svc)
 		}
 		fmt.Println()
-		
+
 		fmt.Println("── Dependency Tree ──")
 		fmt.Print(analyzer.FormatDependencyTree(analysis))
 		fmt.Println()
-		
+
 		fmt.Println("── Network Graph ──")
 		fmt.Print(analyzer.FormatNetworkGraph(analysis))
-		
+
 		if len(analysis.Warnings) > 0 {
 			fmt.Println()
 			fmt.Println("── Warnings ──")
@@ -161,7 +161,7 @@ func runAnalyze(file, output string) error {
 			}
 		}
 	}
-	
+
 	return nil
 }
 
@@ -180,7 +180,7 @@ func formatAnalysisJSON(a *analyzer.ComposeAnalysis) string {
 		if i > 0 {
 			sb.WriteString(",\n")
 		}
-		sb.WriteString(fmt.Sprintf("    {\"name\": \"%s\", \"image\": \"%s\", \"depth\": %d}", 
+		sb.WriteString(fmt.Sprintf("    {\"name\": \"%s\", \"image\": \"%s\", \"depth\": %d}",
 			svc.Name, svc.Image, svc.Depth))
 	}
 	sb.WriteString("\n  ],\n")
@@ -213,30 +213,30 @@ func runDiff(baseFile, overrideFile string) error {
 	if err != nil {
 		return fmt.Errorf("error parsing base file: %w", err)
 	}
-	
+
 	override, err := parser.ParseFile(overrideFile)
 	if err != nil {
 		return fmt.Errorf("error parsing override file: %w", err)
 	}
-	
+
 	diff := differ.Diff(base, override)
 	output := differ.FormatDiff(diff)
 	fmt.Println(output)
-	
+
 	if !diff.HasChanges {
 		return nil
 	}
-	
+
 	fmt.Printf("\n═══\n")
 	fmt.Printf("Changes: %d added, %d removed, %d modified\n",
 		len(diff.AddedServices), len(diff.RemovedServices), len(diff.ModifiedServices))
-	
+
 	return nil
 }
 
 func newMergeCmd() *cobra.Command {
 	var output string
-	
+
 	cmd := &cobra.Command{
 		Use:   "merge [base] [override...]",
 		Short: "Merge docker-compose files",
@@ -246,15 +246,15 @@ func newMergeCmd() *cobra.Command {
 			return runMerge(args, output)
 		},
 	}
-	
+
 	cmd.Flags().StringVarP(&output, "output", "o", "", "Output file (default: stdout)")
-	
+
 	return cmd
 }
 
 func runMerge(files []string, outputFile string) error {
 	var composeFiles []*parser.ComposeFile
-	
+
 	for _, file := range files {
 		cf, err := parser.ParseFile(file)
 		if err != nil {
@@ -262,15 +262,15 @@ func runMerge(files []string, outputFile string) error {
 		}
 		composeFiles = append(composeFiles, cf)
 	}
-	
+
 	merged, err := merger.Merge(composeFiles...)
 	if err != nil {
 		return fmt.Errorf("error merging: %w", err)
 	}
-	
+
 	// Simple YAML output
 	output := formatComposeYAML(merged)
-	
+
 	if outputFile != "" {
 		if err := os.WriteFile(outputFile, []byte(output), 0644); err != nil {
 			return fmt.Errorf("error writing output: %w", err)
@@ -279,20 +279,20 @@ func runMerge(files []string, outputFile string) error {
 	} else {
 		fmt.Print(output)
 	}
-	
+
 	return nil
 }
 
 func formatComposeYAML(cf *parser.ComposeFile) string {
 	var sb strings.Builder
-	
+
 	if cf.Version != "" {
 		sb.WriteString(fmt.Sprintf("version: '%s'\n", cf.Version))
 	}
 	if cf.Name != "" {
 		sb.WriteString(fmt.Sprintf("name: %s\n", cf.Name))
 	}
-	
+
 	sb.WriteString("\nservices:\n")
 	for name, svc := range cf.Services {
 		sb.WriteString(fmt.Sprintf("  %s:\n", name))
@@ -322,7 +322,7 @@ func formatComposeYAML(cf *parser.ComposeFile) string {
 			sb.WriteString(fmt.Sprintf("    restart: %s\n", svc.Restart))
 		}
 	}
-	
+
 	return sb.String()
 }
 

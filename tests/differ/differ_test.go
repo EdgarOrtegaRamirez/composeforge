@@ -18,9 +18,9 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml)
 	cf2, _ := parser.ParseString(yaml)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if diff.HasChanges {
 		t.Error("expected no changes")
 	}
@@ -43,9 +43,9 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if !diff.HasChanges {
 		t.Error("expected changes")
 	}
@@ -71,9 +71,9 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if !diff.HasChanges {
 		t.Error("expected changes")
 	}
@@ -95,9 +95,9 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if !diff.HasChanges {
 		t.Error("expected changes")
 	}
@@ -121,18 +121,18 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if !diff.HasChanges {
 		t.Error("expected changes")
 	}
-	
+
 	webDiff := findServiceDiff(diff.ServiceDiffs, "web")
 	if webDiff == nil {
 		t.Fatal("expected web service diff")
 	}
-	
+
 	found := false
 	for _, change := range webDiff.Changes {
 		if change.Field == "ports" && change.Type == differ.ChangeModified {
@@ -156,9 +156,9 @@ services:
     image: nginx`
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if !diff.VersionChanged {
 		t.Error("expected version change")
 	}
@@ -187,18 +187,18 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
-	
+
 	if !diff.HasChanges {
 		t.Error("expected changes")
 	}
-	
+
 	webDiff := findServiceDiff(diff.ServiceDiffs, "web")
 	if webDiff == nil {
 		t.Fatal("expected web service diff")
 	}
-	
+
 	modifiedFound := false
 	addedFound := false
 	for _, change := range webDiff.Changes {
@@ -209,7 +209,7 @@ services:
 			addedFound = true
 		}
 	}
-	
+
 	if !modifiedFound {
 		t.Error("expected BAZ modification")
 	}
@@ -233,10 +233,10 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	diff := differ.Diff(cf1, cf2)
 	output := differ.FormatDiff(diff)
-	
+
 	if output == "" {
 		t.Error("expected non-empty diff output")
 	}
@@ -256,10 +256,10 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml)
 	cf2, _ := parser.ParseString(yaml)
-	
+
 	diff := differ.Diff(cf1, cf2)
 	output := differ.FormatDiff(diff)
-	
+
 	if output != "No changes detected." {
 		t.Errorf("expected 'No changes detected.', got '%s'", output)
 	}

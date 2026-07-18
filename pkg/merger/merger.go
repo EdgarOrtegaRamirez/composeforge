@@ -26,13 +26,13 @@ func Merge(files ...*parser.ComposeFile) (*parser.ComposeFile, error) {
 	if len(files) == 0 {
 		return nil, fmt.Errorf("no files to merge")
 	}
-	
+
 	result := deepCopy(files[0])
-	
+
 	for i := 1; i < len(files); i++ {
 		mergeComposeFile(result, files[i])
 	}
-	
+
 	return result, nil
 }
 
@@ -41,12 +41,12 @@ func mergeComposeFile(base, override *parser.ComposeFile) {
 	if override.Version != "" {
 		base.Version = override.Version
 	}
-	
+
 	// Name: use override if present
 	if override.Name != "" {
 		base.Name = override.Name
 	}
-	
+
 	// Services: merge each service
 	for name, overrideSvc := range override.Services {
 		if baseSvc, exists := base.Services[name]; exists {
@@ -56,7 +56,7 @@ func mergeComposeFile(base, override *parser.ComposeFile) {
 			base.Services[name] = overrideSvc
 		}
 	}
-	
+
 	// Networks: merge
 	for name, overrideNet := range override.Networks {
 		if _, exists := base.Networks[name]; !exists {
@@ -64,21 +64,21 @@ func mergeComposeFile(base, override *parser.ComposeFile) {
 		}
 		// Note: deep merge of network config could be added here
 	}
-	
+
 	// Volumes: merge
 	for name, overrideVol := range override.Volumes {
 		if _, exists := base.Volumes[name]; !exists {
 			base.Volumes[name] = overrideVol
 		}
 	}
-	
+
 	// Secrets: merge
 	for name, overrideSecret := range override.Secrets {
 		if _, exists := base.Secrets[name]; !exists {
 			base.Secrets[name] = overrideSecret
 		}
 	}
-	
+
 	// Configs: merge
 	for name, overrideConfig := range override.Configs {
 		if _, exists := base.Configs[name]; !exists {
@@ -113,7 +113,7 @@ func mergeService(base, override *parser.Service) {
 	if override.StopGracePeriod != "" {
 		base.StopGracePeriod = override.StopGracePeriod
 	}
-	
+
 	// Override non-zero fields
 	if override.Privileged {
 		base.Privileged = override.Privileged
@@ -127,7 +127,7 @@ func mergeService(base, override *parser.Service) {
 	if override.ReadOnly {
 		base.ReadOnly = override.ReadOnly
 	}
-	
+
 	// Override fields that can be explicitly set to zero value
 	// These use pointer semantics - check if explicitly set in override
 	// For simplicity, we always override these
@@ -135,7 +135,7 @@ func mergeService(base, override *parser.Service) {
 	base.Tty = override.Tty
 	base.StdinOpen = override.StdinOpen
 	base.ReadOnly = override.ReadOnly
-	
+
 	// Command/Entrypoint: override if non-nil
 	if override.Command != nil {
 		base.Command = override.Command
@@ -143,7 +143,7 @@ func mergeService(base, override *parser.Service) {
 	if override.Entrypoint != nil {
 		base.Entrypoint = override.Entrypoint
 	}
-	
+
 	// Environment: merge (override values take precedence)
 	if override.Environment != nil {
 		baseEnv := parser.NormalizeEnvironment(base.Environment)
@@ -157,7 +157,7 @@ func mergeService(base, override *parser.Service) {
 		}
 		base.Environment = merged
 	}
-	
+
 	// Volumes: append override volumes
 	if len(override.Volumes) > 0 {
 		// Check for duplicates by mount path
@@ -180,7 +180,7 @@ func mergeService(base, override *parser.Service) {
 			}
 			existingMounts[mountPath] = true
 		}
-		
+
 		for _, vol := range override.Volumes {
 			mountPath := vol
 			for i := len(vol) - 1; i >= 0; i-- {
@@ -200,22 +200,22 @@ func mergeService(base, override *parser.Service) {
 			}
 		}
 	}
-	
+
 	// Ports: override (replace all)
 	if len(override.Ports) > 0 {
 		base.Ports = override.Ports
 	}
-	
+
 	// Depends_on: override
 	if override.DependsOn != nil {
 		base.DependsOn = override.DependsOn
 	}
-	
+
 	// Networks: override
 	if override.Networks != nil {
 		base.Networks = override.Networks
 	}
-	
+
 	// Labels: merge
 	if len(override.Labels) > 0 {
 		if base.Labels == nil {
@@ -225,32 +225,32 @@ func mergeService(base, override *parser.Service) {
 			base.Labels[k] = v
 		}
 	}
-	
+
 	// Build: override if present
 	if override.Build != nil {
 		base.Build = override.Build
 	}
-	
+
 	// Healthcheck: override if present
 	if override.HealthCheck != nil {
 		base.HealthCheck = override.HealthCheck
 	}
-	
+
 	// Deploy: override if present
 	if override.Deploy != nil {
 		base.Deploy = override.Deploy
 	}
-	
+
 	// Logging: override if present
 	if override.Logging != nil {
 		base.Logging = override.Logging
 	}
-	
+
 	// Env_file: override if present
 	if override.EnvFile != nil {
 		base.EnvFile = override.EnvFile
 	}
-	
+
 	// Security: override
 	if len(override.CapAdd) > 0 {
 		base.CapAdd = override.CapAdd
@@ -264,30 +264,30 @@ func mergeService(base, override *parser.Service) {
 	if len(override.ExtraHosts) > 0 {
 		base.ExtraHosts = override.ExtraHosts
 	}
-	
+
 	// DNS: override if present
 	if override.DNS != nil {
 		base.DNS = override.DNS
 	}
-	
+
 	// Sysctls: override if present
 	if override.Sysctls != nil {
 		base.Sysctls = override.Sysctls
 	}
-	
+
 	// Ulimits: override if present
 	if override.Ulimits != nil {
 		base.Ulimits = override.Ulimits
 	}
-	
+
 	// Tmpfs: override if present
 	if override.Tmpfs != nil {
 		base.Tmpfs = override.Tmpfs
 	}
-	
+
 	// Pids_limit: override
 	base.PidsLimit = override.PidsLimit
-	
+
 	// Shm_size: override
 	base.ShmSize = override.ShmSize
 }
@@ -302,7 +302,7 @@ func deepCopy(cf *parser.ComposeFile) *parser.ComposeFile {
 		Secrets:  make(map[string]parser.Secret),
 		Configs:  make(map[string]parser.Config),
 	}
-	
+
 	for k, v := range cf.Services {
 		result.Services[k] = v
 	}
@@ -318,6 +318,6 @@ func deepCopy(cf *parser.ComposeFile) *parser.ComposeFile {
 	for k, v := range cf.Configs {
 		result.Configs[k] = v
 	}
-	
+
 	return result
 }

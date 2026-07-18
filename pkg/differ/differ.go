@@ -12,62 +12,62 @@ import (
 type ChangeType string
 
 const (
-	ChangeAdded   ChangeType = "ADDED"
-	ChangeRemoved ChangeType = "REMOVED"
+	ChangeAdded    ChangeType = "ADDED"
+	ChangeRemoved  ChangeType = "REMOVED"
 	ChangeModified ChangeType = "MODIFIED"
 )
 
 // ServiceDiff represents changes to a single service
 type ServiceDiff struct {
-	Name     string            `json:"name"`
-	Type     ChangeType        `json:"type"`
-	Changes  []FieldChange     `json:"changes,omitempty"`
+	Name    string        `json:"name"`
+	Type    ChangeType    `json:"type"`
+	Changes []FieldChange `json:"changes,omitempty"`
 }
 
 // FieldChange represents a change to a specific field
 type FieldChange struct {
-	Field    string `json:"field"`
-	OldValue string `json:"old_value,omitempty"`
-	NewValue string `json:"new_value,omitempty"`
+	Field    string     `json:"field"`
+	OldValue string     `json:"old_value,omitempty"`
+	NewValue string     `json:"new_value,omitempty"`
 	Type     ChangeType `json:"type"`
 }
 
 // ComposeDiff represents the complete diff between two compose files
 type ComposeDiff struct {
-	ServiceDiffs    []ServiceDiff     `json:"service_diffs"`
-	AddedServices   []string          `json:"added_services"`
-	RemovedServices []string          `json:"removed_services"`
-	ModifiedServices []string         `json:"modified_services"`
-	NetworkChanges  []FieldChange     `json:"network_changes,omitempty"`
-	VolumeChanges   []FieldChange     `json:"volume_changes,omitempty"`
-	VersionChanged  bool              `json:"version_changed"`
-	OldVersion      string            `json:"old_version,omitempty"`
-	NewVersion      string            `json:"new_version,omitempty"`
-	HasChanges      bool              `json:"has_changes"`
+	ServiceDiffs     []ServiceDiff `json:"service_diffs"`
+	AddedServices    []string      `json:"added_services"`
+	RemovedServices  []string      `json:"removed_services"`
+	ModifiedServices []string      `json:"modified_services"`
+	NetworkChanges   []FieldChange `json:"network_changes,omitempty"`
+	VolumeChanges    []FieldChange `json:"volume_changes,omitempty"`
+	VersionChanged   bool          `json:"version_changed"`
+	OldVersion       string        `json:"old_version,omitempty"`
+	NewVersion       string        `json:"new_version,omitempty"`
+	HasChanges       bool          `json:"has_changes"`
 }
 
 // Diff compares two compose files and returns the differences
 func Diff(old, new *parser.ComposeFile) *ComposeDiff {
 	result := &ComposeDiff{}
-	
+
 	// Check version change
 	if old.Version != new.Version {
 		result.VersionChanged = true
 		result.OldVersion = old.Version
 		result.NewVersion = new.Version
 	}
-	
+
 	// Build maps for comparison
 	oldServices := make(map[string]parser.Service)
 	newServices := make(map[string]parser.Service)
-	
+
 	for name, svc := range old.Services {
 		oldServices[name] = svc
 	}
 	for name, svc := range new.Services {
 		newServices[name] = svc
 	}
-	
+
 	// Find added services
 	for name := range newServices {
 		if _, exists := oldServices[name]; !exists {
@@ -78,7 +78,7 @@ func Diff(old, new *parser.ComposeFile) *ComposeDiff {
 			})
 		}
 	}
-	
+
 	// Find removed services
 	for name := range oldServices {
 		if _, exists := newServices[name]; !exists {
@@ -89,7 +89,7 @@ func Diff(old, new *parser.ComposeFile) *ComposeDiff {
 			})
 		}
 	}
-	
+
 	// Find modified services
 	for name := range oldServices {
 		if newSvc, exists := newServices[name]; exists {
@@ -105,26 +105,26 @@ func Diff(old, new *parser.ComposeFile) *ComposeDiff {
 			}
 		}
 	}
-	
+
 	// Compare networks
 	result.NetworkChanges = diffNetworks(old.Networks, new.Networks)
-	
+
 	// Compare volumes
 	result.VolumeChanges = diffVolumes(old.Volumes, new.Volumes)
-	
-	result.HasChanges = len(result.AddedServices) > 0 || 
-		len(result.RemovedServices) > 0 || 
+
+	result.HasChanges = len(result.AddedServices) > 0 ||
+		len(result.RemovedServices) > 0 ||
 		len(result.ModifiedServices) > 0 ||
 		result.VersionChanged ||
 		len(result.NetworkChanges) > 0 ||
 		len(result.VolumeChanges) > 0
-	
+
 	return result
 }
 
 func diffService(name string, old, new parser.Service) []FieldChange {
 	var changes []FieldChange
-	
+
 	// Simple string fields
 	changes = append(changes, diffStringField("image", old.Image, new.Image)...)
 	changes = append(changes, diffStringField("hostname", old.HostName, new.HostName)...)
@@ -134,13 +134,13 @@ func diffService(name string, old, new parser.Service) []FieldChange {
 	changes = append(changes, diffStringField("working_dir", old.WorkingDir, new.WorkingDir)...)
 	changes = append(changes, diffStringField("stop_signal", old.StopSignal, new.StopSignal)...)
 	changes = append(changes, diffStringField("stop_grace_period", old.StopGracePeriod, new.StopGracePeriod)...)
-	
+
 	// Boolean fields
 	changes = append(changes, diffBoolField("privileged", old.Privileged, new.Privileged)...)
 	changes = append(changes, diffBoolField("stdin_open", old.StdinOpen, new.StdinOpen)...)
 	changes = append(changes, diffBoolField("tty", old.Tty, new.Tty)...)
 	changes = append(changes, diffBoolField("read_only", old.ReadOnly, new.ReadOnly)...)
-	
+
 	// Slice fields
 	changes = append(changes, diffStringSliceField("ports", old.Ports, new.Ports)...)
 	changes = append(changes, diffStringSliceField("expose", old.Expose, new.Expose)...)
@@ -149,22 +149,22 @@ func diffService(name string, old, new parser.Service) []FieldChange {
 	changes = append(changes, diffStringSliceField("cap_drop", old.CapDrop, new.CapDrop)...)
 	changes = append(changes, diffStringSliceField("security_opt", old.SecurityOpt, new.SecurityOpt)...)
 	changes = append(changes, diffStringSliceField("extra_hosts", old.ExtraHosts, new.ExtraHosts)...)
-	
+
 	// Map fields
 	changes = append(changes, diffMapField("labels", old.Labels, new.Labels)...)
-	
+
 	// Environment
 	changes = append(changes, diffEnvironment(old.Environment, new.Environment)...)
-	
+
 	// Depends_on
 	changes = append(changes, diffDependsOn(old.DependsOn, new.DependsOn)...)
-	
+
 	// Build
 	changes = append(changes, diffBuild(old.Build, new.Build)...)
-	
+
 	// Healthcheck
 	changes = append(changes, diffHealthCheck(old.HealthCheck, new.HealthCheck)...)
-	
+
 	// Filter out empty changes
 	var result []FieldChange
 	for _, c := range changes {
@@ -172,7 +172,7 @@ func diffService(name string, old, new parser.Service) []FieldChange {
 			result = append(result, c)
 		}
 	}
-	
+
 	return result
 }
 
@@ -208,14 +208,14 @@ func diffStringSliceField(field string, old, new []string) []FieldChange {
 	copy(newSorted, new)
 	sort.Strings(oldSorted)
 	sort.Strings(newSorted)
-	
+
 	oldStr := strings.Join(oldSorted, ",")
 	newStr := strings.Join(newSorted, ",")
-	
+
 	if oldStr == newStr {
 		return nil
 	}
-	
+
 	return []FieldChange{{
 		Field:    field,
 		OldValue: strings.Join(old, " "),
@@ -228,14 +228,14 @@ func diffMapField(field string, old, new map[string]string) []FieldChange {
 	if len(old) == 0 && len(new) == 0 {
 		return nil
 	}
-	
+
 	oldStr := formatMap(old)
 	newStr := formatMap(new)
-	
+
 	if oldStr == newStr {
 		return nil
 	}
-	
+
 	return []FieldChange{{
 		Field:    field,
 		OldValue: oldStr,
@@ -253,7 +253,7 @@ func formatMap(m map[string]string) string {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	
+
 	var parts []string
 	for _, k := range keys {
 		parts = append(parts, fmt.Sprintf("%s=%s", k, m[k]))
@@ -264,13 +264,13 @@ func formatMap(m map[string]string) string {
 func diffEnvironment(old, new interface{}) []FieldChange {
 	oldEnv := parser.NormalizeEnvironment(old)
 	newEnv := parser.NormalizeEnvironment(new)
-	
+
 	if len(oldEnv) == 0 && len(newEnv) == 0 {
 		return nil
 	}
-	
+
 	var changes []FieldChange
-	
+
 	// Find added/modified
 	for key, newVal := range newEnv {
 		oldVal, exists := oldEnv[key]
@@ -289,7 +289,7 @@ func diffEnvironment(old, new interface{}) []FieldChange {
 			})
 		}
 	}
-	
+
 	// Find removed
 	for key, oldVal := range oldEnv {
 		if _, exists := newEnv[key]; !exists {
@@ -300,21 +300,21 @@ func diffEnvironment(old, new interface{}) []FieldChange {
 			})
 		}
 	}
-	
+
 	return changes
 }
 
 func diffDependsOn(old, new interface{}) []FieldChange {
 	oldDeps := parser.NormalizeDependsOn(old)
 	newDeps := parser.NormalizeDependsOn(new)
-	
+
 	oldStr := strings.Join(oldDeps, ",")
 	newStr := strings.Join(newDeps, ",")
-	
+
 	if oldStr == newStr {
 		return nil
 	}
-	
+
 	return []FieldChange{{
 		Field:    "depends_on",
 		OldValue: strings.Join(oldDeps, " "),
@@ -341,7 +341,7 @@ func diffBuild(old, new *parser.BuildConfig) []FieldChange {
 			Type:     ChangeRemoved,
 		}}
 	}
-	
+
 	var changes []FieldChange
 	changes = append(changes, diffStringField("build.context", old.Context, new.Context)...)
 	changes = append(changes, diffStringField("build.dockerfile", old.Dockerfile, new.Dockerfile)...)
@@ -367,7 +367,7 @@ func diffHealthCheck(old, new *parser.HealthCheck) []FieldChange {
 			Type:     ChangeRemoved,
 		}}
 	}
-	
+
 	var changes []FieldChange
 	changes = append(changes, diffStringField("healthcheck.interval", old.Interval, new.Interval)...)
 	changes = append(changes, diffStringField("healthcheck.timeout", old.Timeout, new.Timeout)...)
@@ -384,7 +384,7 @@ func diffHealthCheck(old, new *parser.HealthCheck) []FieldChange {
 
 func diffNetworks(old, new map[string]parser.Network) []FieldChange {
 	var changes []FieldChange
-	
+
 	// Added/modified
 	for name, newNet := range new {
 		oldNet, exists := old[name]
@@ -405,23 +405,23 @@ func diffNetworks(old, new map[string]parser.Network) []FieldChange {
 			}
 		}
 	}
-	
+
 	// Removed
 	for name := range old {
 		if _, exists := new[name]; !exists {
 			changes = append(changes, FieldChange{
-				Field:   fmt.Sprintf("network.%s", name),
-				Type:    ChangeRemoved,
+				Field: fmt.Sprintf("network.%s", name),
+				Type:  ChangeRemoved,
 			})
 		}
 	}
-	
+
 	return changes
 }
 
 func diffVolumes(old, new map[string]parser.Volume) []FieldChange {
 	var changes []FieldChange
-	
+
 	for name, newVol := range new {
 		oldVol, exists := old[name]
 		if !exists {
@@ -449,16 +449,16 @@ func diffVolumes(old, new map[string]parser.Volume) []FieldChange {
 			}
 		}
 	}
-	
+
 	for name := range old {
 		if _, exists := new[name]; !exists {
 			changes = append(changes, FieldChange{
-				Field:   fmt.Sprintf("volume.%s", name),
-				Type:    ChangeRemoved,
+				Field: fmt.Sprintf("volume.%s", name),
+				Type:  ChangeRemoved,
 			})
 		}
 	}
-	
+
 	return changes
 }
 
@@ -467,13 +467,13 @@ func FormatDiff(diff *ComposeDiff) string {
 	if !diff.HasChanges {
 		return "No changes detected."
 	}
-	
+
 	var sb strings.Builder
-	
+
 	if diff.VersionChanged {
 		sb.WriteString(fmt.Sprintf("Version: %s → %s\n\n", diff.OldVersion, diff.NewVersion))
 	}
-	
+
 	if len(diff.AddedServices) > 0 {
 		sb.WriteString("Added services:\n")
 		for _, svc := range diff.AddedServices {
@@ -481,7 +481,7 @@ func FormatDiff(diff *ComposeDiff) string {
 		}
 		sb.WriteString("\n")
 	}
-	
+
 	if len(diff.RemovedServices) > 0 {
 		sb.WriteString("Removed services:\n")
 		for _, svc := range diff.RemovedServices {
@@ -489,7 +489,7 @@ func FormatDiff(diff *ComposeDiff) string {
 		}
 		sb.WriteString("\n")
 	}
-	
+
 	for _, svcDiff := range diff.ServiceDiffs {
 		if svcDiff.Type == ChangeModified && len(svcDiff.Changes) > 0 {
 			sb.WriteString(fmt.Sprintf("Modified: %s\n", svcDiff.Name))
@@ -506,6 +506,6 @@ func FormatDiff(diff *ComposeDiff) string {
 			sb.WriteString("\n")
 		}
 	}
-	
+
 	return strings.TrimSpace(sb.String())
 }

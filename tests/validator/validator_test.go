@@ -33,9 +33,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	if result.ErrorCount > 0 {
 		t.Errorf("expected 0 errors, got %d", result.ErrorCount)
 		for _, issue := range result.Issues {
@@ -57,9 +57,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "missing-field" && issue.Severity == validator.SeverityError {
@@ -83,9 +83,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "security" && issue.Severity == validator.SeverityCritical {
@@ -111,9 +111,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "security" && strContains(issue.Message, "root") {
@@ -138,9 +138,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "security" && issue.Severity == validator.SeverityCritical {
@@ -168,9 +168,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "security" && strContains(issue.Message, "secret") {
@@ -194,9 +194,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "invalid-value" && strContains(issue.Message, "restart") {
@@ -221,9 +221,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "reference" && strContains(issue.Message, "nonexistent") {
@@ -248,9 +248,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "security" && strContains(issue.Message, "docker.sock") {
@@ -274,9 +274,9 @@ networks:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "structure" && issue.Severity == validator.SeverityError {
@@ -302,9 +302,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	result := validator.Validate(cf)
-	
+
 	found := false
 	for _, issue := range result.Issues {
 		if issue.Category == "healthcheck" && strContains(issue.Message, "retries is 0") {

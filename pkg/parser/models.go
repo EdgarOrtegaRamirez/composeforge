@@ -8,53 +8,53 @@ import (
 
 // ComposeFile represents a complete docker-compose.yml file
 type ComposeFile struct {
-	Version  string                `yaml:"version" json:"version"`
-	Services map[string]Service    `yaml:"services" json:"services"`
-	Volumes  map[string]Volume     `yaml:"volumes,omitempty" json:"volumes,omitempty"`
-	Networks map[string]Network    `yaml:"networks,omitempty" json:"networks,omitempty"`
-	Secrets  map[string]Secret     `yaml:"secrets,omitempty" json:"secrets,omitempty"`
-	Configs  map[string]Config     `yaml:"configs,omitempty" json:"configs,omitempty"`
-	Name     string                `yaml:"name,omitempty" json:"name,omitempty"`
+	Version  string             `yaml:"version" json:"version"`
+	Services map[string]Service `yaml:"services" json:"services"`
+	Volumes  map[string]Volume  `yaml:"volumes,omitempty" json:"volumes,omitempty"`
+	Networks map[string]Network `yaml:"networks,omitempty" json:"networks,omitempty"`
+	Secrets  map[string]Secret  `yaml:"secrets,omitempty" json:"secrets,omitempty"`
+	Configs  map[string]Config  `yaml:"configs,omitempty" json:"configs,omitempty"`
+	Name     string             `yaml:"name,omitempty" json:"name,omitempty"`
 }
 
 // Service represents a single service definition
 type Service struct {
-	Image         string            `yaml:"image,omitempty" json:"image,omitempty"`
-	Build         *BuildConfig      `yaml:"build,omitempty" json:"build,omitempty"`
-	Command       interface{}       `yaml:"command,omitempty" json:"command,omitempty"`
-	Entrypoint    interface{}       `yaml:"entrypoint,omitempty" json:"entrypoint,omitempty"`
-	Environment   interface{}       `yaml:"environment,omitempty" json:"environment,omitempty"`
-	Volumes       []string          `yaml:"volumes,omitempty" json:"volumes,omitempty"`
-	Ports         []string          `yaml:"ports,omitempty" json:"ports,omitempty"`
-	Expose        []string          `yaml:"expose,omitempty" json:"expose,omitempty"`
-	DependsOn     interface{}       `yaml:"depends_on,omitempty" json:"depends_on,omitempty"`
-	Networks      interface{}       `yaml:"networks,omitempty" json:"networks,omitempty"`
-	Restart       string            `yaml:"restart,omitempty" json:"restart,omitempty"`
-	HostName      string            `yaml:"hostname,omitempty" json:"hostname,omitempty"`
-	ContainerName string            `yaml:"container_name,omitempty" json:"container_name,omitempty"`
-	EnvFile       interface{}       `yaml:"env_file,omitempty" json:"env_file,omitempty"`
-	Labels        map[string]string `yaml:"labels,omitempty" json:"labels,omitempty"`
-	HealthCheck   *HealthCheck      `yaml:"healthcheck,omitempty" json:"healthcheck,omitempty"`
-	Deploy        *DeployConfig     `yaml:"deploy,omitempty" json:"deploy,omitempty"`
-	Privileged    bool              `yaml:"privileged,omitempty" json:"privileged,omitempty"`
-	User          string            `yaml:"user,omitempty" json:"user,omitempty"`
-	WorkingDir    string            `yaml:"working_dir,omitempty" json:"working_dir,omitempty"`
-	StdinOpen     bool              `yaml:"stdin_open,omitempty" json:"stdin_open,omitempty"`
-	Tty           bool              `yaml:"tty,omitempty" json:"tty,omitempty"`
-	ReadOnly      bool              `yaml:"read_only,omitempty" json:"read_only,omitempty"`
-	PidsLimit     interface{}       `yaml:"pids_limit,omitempty" json:"pids_limit,omitempty"`
-	ShmSize       interface{}       `yaml:"shm_size,omitempty" json:"shm_size,omitempty"`
-	CapAdd        []string          `yaml:"cap_add,omitempty" json:"cap_add,omitempty"`
-	CapDrop       []string          `yaml:"cap_drop,omitempty" json:"cap_drop,omitempty"`
-	SecurityOpt   []string          `yaml:"security_opt,omitempty" json:"security_opt,omitempty"`
-	Sysctls       interface{}       `yaml:"sysctls,omitempty" json:"sysctls,omitempty"`
-	DNS           interface{}       `yaml:"dns,omitempty" json:"dns,omitempty"`
-	ExtraHosts    []string          `yaml:"extra_hosts,omitempty" json:"extra_hosts,omitempty"`
-	Logging       *LoggingConfig    `yaml:"logging,omitempty" json:"logging,omitempty"`
-	Ulimits       interface{}       `yaml:"ulimits,omitempty" json:"ulimits,omitempty"`
-	Tmpfs         interface{}       `yaml:"tmpfs,omitempty" json:"tmpfs,omitempty"`
-	StopGracePeriod string          `yaml:"stop_grace_period,omitempty" json:"stop_grace_period,omitempty"`
-	StopSignal    string            `yaml:"stop_signal,omitempty" json:"stop_signal,omitempty"`
+	Image           string            `yaml:"image,omitempty" json:"image,omitempty"`
+	Build           *BuildConfig      `yaml:"build,omitempty" json:"build,omitempty"`
+	Command         interface{}       `yaml:"command,omitempty" json:"command,omitempty"`
+	Entrypoint      interface{}       `yaml:"entrypoint,omitempty" json:"entrypoint,omitempty"`
+	Environment     interface{}       `yaml:"environment,omitempty" json:"environment,omitempty"`
+	Volumes         []string          `yaml:"volumes,omitempty" json:"volumes,omitempty"`
+	Ports           []string          `yaml:"ports,omitempty" json:"ports,omitempty"`
+	Expose          []string          `yaml:"expose,omitempty" json:"expose,omitempty"`
+	DependsOn       interface{}       `yaml:"depends_on,omitempty" json:"depends_on,omitempty"`
+	Networks        interface{}       `yaml:"networks,omitempty" json:"networks,omitempty"`
+	Restart         string            `yaml:"restart,omitempty" json:"restart,omitempty"`
+	HostName        string            `yaml:"hostname,omitempty" json:"hostname,omitempty"`
+	ContainerName   string            `yaml:"container_name,omitempty" json:"container_name,omitempty"`
+	EnvFile         interface{}       `yaml:"env_file,omitempty" json:"env_file,omitempty"`
+	Labels          map[string]string `yaml:"labels,omitempty" json:"labels,omitempty"`
+	HealthCheck     *HealthCheck      `yaml:"healthcheck,omitempty" json:"healthcheck,omitempty"`
+	Deploy          *DeployConfig     `yaml:"deploy,omitempty" json:"deploy,omitempty"`
+	Privileged      bool              `yaml:"privileged,omitempty" json:"privileged,omitempty"`
+	User            string            `yaml:"user,omitempty" json:"user,omitempty"`
+	WorkingDir      string            `yaml:"working_dir,omitempty" json:"working_dir,omitempty"`
+	StdinOpen       bool              `yaml:"stdin_open,omitempty" json:"stdin_open,omitempty"`
+	Tty             bool              `yaml:"tty,omitempty" json:"tty,omitempty"`
+	ReadOnly        bool              `yaml:"read_only,omitempty" json:"read_only,omitempty"`
+	PidsLimit       interface{}       `yaml:"pids_limit,omitempty" json:"pids_limit,omitempty"`
+	ShmSize         interface{}       `yaml:"shm_size,omitempty" json:"shm_size,omitempty"`
+	CapAdd          []string          `yaml:"cap_add,omitempty" json:"cap_add,omitempty"`
+	CapDrop         []string          `yaml:"cap_drop,omitempty" json:"cap_drop,omitempty"`
+	SecurityOpt     []string          `yaml:"security_opt,omitempty" json:"security_opt,omitempty"`
+	Sysctls         interface{}       `yaml:"sysctls,omitempty" json:"sysctls,omitempty"`
+	DNS             interface{}       `yaml:"dns,omitempty" json:"dns,omitempty"`
+	ExtraHosts      []string          `yaml:"extra_hosts,omitempty" json:"extra_hosts,omitempty"`
+	Logging         *LoggingConfig    `yaml:"logging,omitempty" json:"logging,omitempty"`
+	Ulimits         interface{}       `yaml:"ulimits,omitempty" json:"ulimits,omitempty"`
+	Tmpfs           interface{}       `yaml:"tmpfs,omitempty" json:"tmpfs,omitempty"`
+	StopGracePeriod string            `yaml:"stop_grace_period,omitempty" json:"stop_grace_period,omitempty"`
+	StopSignal      string            `yaml:"stop_signal,omitempty" json:"stop_signal,omitempty"`
 }
 
 // BuildConfig represents build configuration
@@ -79,32 +79,32 @@ type HealthCheck struct {
 
 // DeployConfig represents deployment configuration
 type DeployConfig struct {
-	Replicas    int                    `yaml:"replicas,omitempty" json:"replicas,omitempty"`
-	Resources   *ResourceRequirements  `yaml:"resources,omitempty" json:"resources,omitempty"`
-	Labels      map[string]string      `yaml:"labels,omitempty" json:"labels,omitempty"`
-	RestartPolicy *RestartPolicy       `yaml:"restart_policy,omitempty" json:"restart_policy,omitempty"`
-	EndpointMode string                `yaml:"endpoint_mode,omitempty" json:"endpoint_mode,omitempty"`
+	Replicas      int                   `yaml:"replicas,omitempty" json:"replicas,omitempty"`
+	Resources     *ResourceRequirements `yaml:"resources,omitempty" json:"resources,omitempty"`
+	Labels        map[string]string     `yaml:"labels,omitempty" json:"labels,omitempty"`
+	RestartPolicy *RestartPolicy        `yaml:"restart_policy,omitempty" json:"restart_policy,omitempty"`
+	EndpointMode  string                `yaml:"endpoint_mode,omitempty" json:"endpoint_mode,omitempty"`
 }
 
 // ResourceRequirements represents resource limits and reservations
 type ResourceRequirements struct {
-	Limits   *ResourceList `yaml:"limits,omitempty" json:"limits,omitempty"`
+	Limits       *ResourceList `yaml:"limits,omitempty" json:"limits,omitempty"`
 	Reservations *ResourceList `yaml:"reservations,omitempty" json:"reservations,omitempty"`
 }
 
 // ResourceList represents a list of resources
 type ResourceList struct {
-	Cpus    string `yaml:"cpus,omitempty" json:"cpus,omitempty"`
-	Memory  string `yaml:"memory,omitempty" json:"memory,omitempty"`
-	Pids    int    `yaml:"pids,omitempty" json:"pids,omitempty"`
+	Cpus   string `yaml:"cpus,omitempty" json:"cpus,omitempty"`
+	Memory string `yaml:"memory,omitempty" json:"memory,omitempty"`
+	Pids   int    `yaml:"pids,omitempty" json:"pids,omitempty"`
 }
 
 // RestartPolicy represents restart policy configuration
 type RestartPolicy struct {
-	Condition string `yaml:"condition,omitempty" json:"condition,omitempty"`
-	Delay     string `yaml:"delay,omitempty" json:"delay,omitempty"`
-	MaxAttempts int  `yaml:"max_attempts,omitempty" json:"max_attempts,omitempty"`
-	Window    string `yaml:"window,omitempty" json:"window,omitempty"`
+	Condition   string `yaml:"condition,omitempty" json:"condition,omitempty"`
+	Delay       string `yaml:"delay,omitempty" json:"delay,omitempty"`
+	MaxAttempts int    `yaml:"max_attempts,omitempty" json:"max_attempts,omitempty"`
+	Window      string `yaml:"window,omitempty" json:"window,omitempty"`
 }
 
 // LoggingConfig represents logging configuration
@@ -136,7 +136,7 @@ type Network struct {
 
 // IPAMConfig represents IP address management configuration
 type IPAMConfig struct {
-	Driver string                 `yaml:"driver,omitempty" json:"driver,omitempty"`
+	Driver string                   `yaml:"driver,omitempty" json:"driver,omitempty"`
 	Config []map[string]interface{} `yaml:"config,omitempty" json:"config,omitempty"`
 }
 
@@ -160,7 +160,7 @@ func ParseMemorySize(s string) (int64, error) {
 		return 0, nil
 	}
 	s = strings.TrimSpace(strings.ToUpper(s))
-	
+
 	multipliers := map[string]int64{
 		"B":  1,
 		"K":  1024,
@@ -172,7 +172,7 @@ func ParseMemorySize(s string) (int64, error) {
 		"T":  1024 * 1024 * 1024 * 1024,
 		"TB": 1024 * 1024 * 1024 * 1024,
 	}
-	
+
 	for suffix, mult := range multipliers {
 		if strings.HasSuffix(s, suffix) {
 			numStr := strings.TrimSuffix(s, suffix)
@@ -183,7 +183,7 @@ func ParseMemorySize(s string) (int64, error) {
 			return int64(num * float64(mult)), nil
 		}
 	}
-	
+
 	// Plain number = bytes
 	num, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
@@ -200,7 +200,7 @@ func FormatMemorySize(bytes int64) string {
 		GB = 1024 * MB
 		TB = 1024 * GB
 	)
-	
+
 	switch {
 	case bytes >= TB:
 		return fmt.Sprintf("%.1f TB", float64(bytes)/float64(TB))
@@ -221,7 +221,7 @@ func NormalizeEnvironment(env interface{}) map[string]string {
 	if env == nil {
 		return result
 	}
-	
+
 	switch v := env.(type) {
 	case map[string]interface{}:
 		for key, val := range v {
@@ -247,7 +247,7 @@ func NormalizeDependsOn(dep interface{}) []string {
 	if dep == nil {
 		return nil
 	}
-	
+
 	switch v := dep.(type) {
 	case []interface{}:
 		var result []string
@@ -272,7 +272,7 @@ func NormalizeVolumes(vols interface{}) []string {
 	if vols == nil {
 		return nil
 	}
-	
+
 	switch v := vols.(type) {
 	case []interface{}:
 		var result []string

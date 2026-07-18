@@ -109,7 +109,7 @@ func convertRaw(raw map[string]interface{}) (*ComposeFile, error) {
 
 func convertService(raw map[string]interface{}) Service {
 	svc := Service{}
-	
+
 	if v, ok := raw["image"].(string); ok {
 		svc.Image = v
 	}
@@ -410,13 +410,13 @@ func FindComposeFile(dir string) (string, error) {
 		"docker-compose.override.yml",
 		"docker-compose.override.yaml",
 	}
-	
+
 	for _, name := range possibleNames {
 		path := filepath.Join(dir, name)
 		if _, err := os.Stat(path); err == nil {
 			return path, nil
 		}
 	}
-	
+
 	return "", fmt.Errorf("no docker-compose file found in %s", dir)
 }

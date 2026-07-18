@@ -34,15 +34,15 @@ networks:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	if cf.Version != "3.8" {
 		t.Errorf("expected version '3.8', got '%s'", cf.Version)
 	}
-	
+
 	if len(cf.Services) != 2 {
 		t.Errorf("expected 2 services, got %d", len(cf.Services))
 	}
-	
+
 	web, ok := cf.Services["web"]
 	if !ok {
 		t.Fatal("service 'web' not found")
@@ -56,7 +56,7 @@ networks:
 	if web.Ports[0] != "8080:80" {
 		t.Errorf("expected port '8080:80', got '%s'", web.Ports[0])
 	}
-	
+
 	db, ok := cf.Services["db"]
 	if !ok {
 		t.Fatal("service 'db' not found")
@@ -64,7 +64,7 @@ networks:
 	if db.Image != "postgres:15" {
 		t.Errorf("expected image 'postgres:15', got '%s'", db.Image)
 	}
-	
+
 	if len(cf.Volumes) != 1 {
 		t.Errorf("expected 1 volume, got %d", len(cf.Volumes))
 	}
@@ -90,7 +90,7 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	app := cf.Services["app"]
 	if app.Build == nil {
 		t.Fatal("expected build config for 'app'")
@@ -122,7 +122,7 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	web := cf.Services["web"]
 	if web.HealthCheck == nil {
 		t.Fatal("expected healthcheck for 'web'")
@@ -160,7 +160,7 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	worker := cf.Services["worker"]
 	if worker.Deploy == nil {
 		t.Fatal("expected deploy config for 'worker'")
@@ -194,13 +194,13 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	web := cf.Services["web"]
 	deps := parser.NormalizeDependsOn(web.DependsOn)
 	if len(deps) != 1 || deps[0] != "api" {
 		t.Errorf("expected web to depend on [api], got %v", deps)
 	}
-	
+
 	api := cf.Services["api"]
 	deps = parser.NormalizeDependsOn(api.DependsOn)
 	if len(deps) != 1 || deps[0] != "db" {
@@ -227,7 +227,7 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	web := cf.Services["web"]
 	deps := parser.NormalizeDependsOn(web.DependsOn)
 	if len(deps) != 2 {
@@ -255,12 +255,12 @@ func TestNormalizeEnvironment(t *testing.T) {
 			expected: map[string]string{"FOO": "bar", "BAZ": "123"},
 		},
 		{
-			name:  "list",
-			input: []interface{}{"FOO=bar", "BAZ=123"},
+			name:     "list",
+			input:    []interface{}{"FOO=bar", "BAZ=123"},
 			expected: map[string]string{"FOO": "bar", "BAZ": "123"},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := parser.NormalizeEnvironment(tt.input)
@@ -290,7 +290,7 @@ func TestParseMemorySize(t *testing.T) {
 		{"", 0, false},
 		{"invalid", 0, true},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			result, err := parser.ParseMemorySize(tt.input)
@@ -316,7 +316,7 @@ func TestFormatMemorySize(t *testing.T) {
 		{1024 * 1024, "1.0 MB"},
 		{1024 * 1024 * 1024, "1.0 GB"},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
 			result := parser.FormatMemorySize(tt.input)
@@ -355,14 +355,14 @@ configs:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	if len(cf.Secrets) != 1 {
 		t.Errorf("expected 1 secret, got %d", len(cf.Secrets))
 	}
 	if _, ok := cf.Secrets["db_password"]; !ok {
 		t.Error("secret 'db_password' not found")
 	}
-	
+
 	if len(cf.Configs) != 1 {
 		t.Errorf("expected 1 config, got %d", len(cf.Configs))
 	}
@@ -394,11 +394,11 @@ networks:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	if len(cf.Networks) != 2 {
 		t.Errorf("expected 2 networks, got %d", len(cf.Networks))
 	}
-	
+
 	backend, ok := cf.Networks["backend"]
 	if !ok {
 		t.Fatal("network 'backend' not found")

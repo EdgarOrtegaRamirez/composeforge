@@ -36,26 +36,26 @@ networks:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
-	
+
 	if len(analysis.Services) != 3 {
 		t.Errorf("expected 3 services, got %d", len(analysis.Services))
 	}
-	
+
 	if analysis.TotalPorts != 1 {
 		t.Errorf("expected 1 port, got %d", analysis.TotalPorts)
 	}
-	
+
 	if analysis.TotalNetworks != 2 {
 		t.Errorf("expected 2 networks, got %d", analysis.TotalNetworks)
 	}
-	
+
 	// Check build order
 	if len(analysis.BuildOrder) != 3 {
 		t.Errorf("expected 3 items in build order, got %d", len(analysis.BuildOrder))
 	}
-	
+
 	// db should come before api, api before web
 	dbIdx := -1
 	apiIdx := -1
@@ -70,9 +70,9 @@ networks:
 			webIdx = i
 		}
 	}
-	
+
 	if dbIdx >= apiIdx || apiIdx >= webIdx {
-		t.Errorf("build order incorrect: %v (db=%d, api=%d, web=%d)", 
+		t.Errorf("build order incorrect: %v (db=%d, api=%d, web=%d)",
 			analysis.BuildOrder, dbIdx, apiIdx, webIdx)
 	}
 }
@@ -93,9 +93,9 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
-	
+
 	found := false
 	for _, w := range analysis.Warnings {
 		if contains(w, "circular") {
@@ -124,14 +124,14 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
-	
+
 	webInfo := findService(analysis.Services, "web")
 	if webInfo == nil {
 		t.Fatal("web service not found")
 	}
-	
+
 	if !webInfo.IsPrivileged {
 		t.Error("expected web to be privileged")
 	}
@@ -166,18 +166,18 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
-	
+
 	dbInfo := findService(analysis.Services, "db")
 	apiInfo := findService(analysis.Services, "api")
 	webInfo := findService(analysis.Services, "web")
 	workerInfo := findService(analysis.Services, "worker")
-	
+
 	if dbInfo == nil || apiInfo == nil || webInfo == nil || workerInfo == nil {
 		t.Fatal("missing services")
 	}
-	
+
 	if dbInfo.Depth != 0 {
 		t.Errorf("expected db depth 0, got %d", dbInfo.Depth)
 	}
@@ -210,10 +210,10 @@ services:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
 	tree := analyzer.FormatDependencyTree(analysis)
-	
+
 	if tree == "" {
 		t.Error("expected non-empty dependency tree")
 	}
@@ -239,10 +239,10 @@ secrets:
 	if err != nil {
 		t.Fatalf("ParseString failed: %v", err)
 	}
-	
+
 	analysis := analyzer.Analyze(cf)
 	summary := analysis.Summary()
-	
+
 	if !contains(summary, "Services: 2") {
 		t.Error("expected 'Services: 2' in summary")
 	}

@@ -26,27 +26,27 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	merged, err := merger.Merge(cf1, cf2)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	// Version should be overridden
 	if merged.Version != "3.8" {
 		t.Errorf("expected version '3.8', got '%s'", merged.Version)
 	}
-	
+
 	// Should have both services
 	if len(merged.Services) != 2 {
 		t.Errorf("expected 2 services, got %d", len(merged.Services))
 	}
-	
+
 	// web image should be overridden
 	if merged.Services["web"].Image != "nginx:2.0" {
 		t.Errorf("expected web image 'nginx:2.0', got '%s'", merged.Services["web"].Image)
 	}
-	
+
 	// api should be added
 	if _, ok := merged.Services["api"]; !ok {
 		t.Error("expected api service to be added")
@@ -68,12 +68,12 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	merged, err := merger.Merge(cf1, cf2)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	// Ports should be preserved from base
 	if len(merged.Services["web"].Ports) != 1 {
 		t.Errorf("expected 1 port, got %d", len(merged.Services["web"].Ports))
@@ -99,14 +99,14 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	merged, err := merger.Merge(cf1, cf2)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	env := parser.NormalizeEnvironment(merged.Services["web"].Environment)
-	
+
 	// FOO should be preserved from base
 	if env["FOO"] != "bar" {
 		t.Errorf("expected FOO=bar, got FOO=%s", env["FOO"])
@@ -141,16 +141,16 @@ networks:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	merged, err := merger.Merge(cf1, cf2)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	if len(merged.Networks) != 2 {
 		t.Errorf("expected 2 networks, got %d", len(merged.Networks))
 	}
-	
+
 	if _, ok := merged.Networks["frontend"]; !ok {
 		t.Error("expected frontend network")
 	}
@@ -179,12 +179,12 @@ volumes:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	merged, err := merger.Merge(cf1, cf2)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	if len(merged.Volumes) != 2 {
 		t.Errorf("expected 2 volumes, got %d", len(merged.Volumes))
 	}
@@ -205,12 +205,12 @@ services:
     image: nginx
 `
 	cf, _ := parser.ParseString(yaml)
-	
+
 	merged, err := merger.Merge(cf)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	if merged.Version != "3.8" {
 		t.Errorf("expected version '3.8', got '%s'", merged.Version)
 	}
@@ -239,24 +239,24 @@ services:
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
 	cf3, _ := parser.ParseString(yaml3)
-	
+
 	merged, err := merger.Merge(cf1, cf2, cf3)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	web := merged.Services["web"]
-	
+
 	// Image from second file
 	if web.Image != "nginx:2.0" {
 		t.Errorf("expected image 'nginx:2.0', got '%s'", web.Image)
 	}
-	
+
 	// Ports from second file
 	if len(web.Ports) != 1 {
 		t.Errorf("expected 1 port, got %d", len(web.Ports))
 	}
-	
+
 	// Environment from third file
 	env := parser.NormalizeEnvironment(web.Environment)
 	if env["NODE_ENV"] != "production" {
@@ -279,12 +279,12 @@ services:
 `
 	cf1, _ := parser.ParseString(yaml1)
 	cf2, _ := parser.ParseString(yaml2)
-	
+
 	merged, err := merger.Merge(cf1, cf2)
 	if err != nil {
 		t.Fatalf("Merge failed: %v", err)
 	}
-	
+
 	if merged.Name != "myapp-prod" {
 		t.Errorf("expected name 'myapp-prod', got '%s'", merged.Name)
 	}
